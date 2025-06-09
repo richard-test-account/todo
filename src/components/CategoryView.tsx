@@ -2,6 +2,7 @@ import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { TodoItem, Category } from '../types/todo';
+import { getTodos, addTodo, updateTodo, deleteTodo } from '../utils/db';
 import './CategoryView.css';
 
 interface CategoryViewProps {
@@ -33,6 +34,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   const { category } = useParams<{ category: string }>();
   const [inputValue, setInputValue] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [showDescription, setShowDescription] = useState(false);
   const [dueDate, setDueDate] = useState<string>('');
   const [expandedTodo, setExpandedTodo] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -128,13 +130,24 @@ const CategoryView: React.FC<CategoryViewProps> = ({
             />
             <button type="submit" className="add-button">Add</button>
           </div>
-          <textarea
-            value={description}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
-            placeholder="Add a description (supports markdown)"
-            className="description-input"
-            rows={3}
-          />
+          <div className="form-actions">
+            <button 
+              type="button" 
+              className="toggle-description-button"
+              onClick={() => setShowDescription(!showDescription)}
+            >
+              {showDescription ? 'Hide Description' : 'Add Description'}
+            </button>
+          </div>
+          {showDescription && (
+            <textarea
+              value={description}
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+              placeholder="Add a description (supports markdown)"
+              className="description-input"
+              rows={3}
+            />
+          )}
         </form>
       </div>
       <div className="category-content">
@@ -178,26 +191,12 @@ const CategoryView: React.FC<CategoryViewProps> = ({
                     />
                     <div className="todo-content">
                       <span className="todo-text">{todo.text}</span>
-                      {todo.description && (
-                        <button
-                          className="expand-button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setExpandedTodo(expandedTodo === todo.id ? null : todo.id);
-                          }}
-                        >
-                          {expandedTodo === todo.id ? '▼' : '▶'}
-                        </button>
+                      {todo.dueDate && (
+                        <span className="todo-date">
+                          {new Date(todo.dueDate).toLocaleDateString()}
+                        </span>
                       )}
                     </div>
-                    {!todo.completed && (
-                      <input
-                        type="date"
-                        value={todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''}
-                        onChange={(e) => handleDateChange(todo.id, e.target.value)}
-                        className="todo-date"
-                      />
-                    )}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

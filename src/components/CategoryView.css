@@ -52,25 +52,47 @@
   background: white;
 }
 
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  align-items: center;
+}
+
+.toggle-description-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.toggle-description-button:hover {
+  background: var(--hover-color);
+  color: var(--text-primary);
+}
+
 .description-input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #e0e0e0;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
-  font-size: 14px;
-  line-height: 1.5;
-  margin-top: 8px;
-  resize: none;
-  height: 100px;
-  font-family: inherit;
-  background: #fafafa;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 80px;
+  transition: all 0.2s ease;
 }
 
 .description-input:focus {
   outline: none;
-  border-color: #007AFF;
-  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
-  background: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-color-light);
 }
 
 .date-input {
