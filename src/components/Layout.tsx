@@ -24,8 +24,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {categories.map((category) => (
             <Link
               key={category.id}
-              to={`/${category.id}`}
-              className={`category-link ${location.pathname === `/${category.id}` ? 'active' : ''}`}
+              to={`/category/${category.id}`}
+              className={`category-link ${location.pathname === `/category/${category.id}` ? 'active' : ''}`}
             >
               {category.name}
             </Link>
