@@ -23,7 +23,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   onUpdateTodo,
   showAllTodos = false,
 }) => {
-  const { categoryId } = useParams<{ categoryId: string }>();
+  const { category } = useParams<{ category: string }>();
   const [inputValue, setInputValue] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [dueDate, setDueDate] = useState<string>('');
@@ -32,7 +32,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   const [editText, setEditText] = useState('');
   const [editDescription, setEditDescription] = useState('');
 
-  const category = categoryId ? categoryId.split('-').map(word => 
+  const categoryName = category ? category.split('-').map(word => 
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ') as Category : 'To classify';
 
@@ -75,7 +75,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    switch (category) {
+    switch (categoryName) {
       case 'To classify':
         return !todo.dueDate;
       case 'Today':
@@ -92,7 +92,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   return (
     <div className="category-view">
       <div className="category-header">
-        <h2 className="category-title">{showAllTodos ? 'All Tasks' : category}</h2>
+        <h2 className="category-title">{showAllTodos ? 'All Tasks' : categoryName}</h2>
         <form onSubmit={handleSubmit} className="todo-form">
           <div className="input-group">
             <input
