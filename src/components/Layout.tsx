@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { TodoItem } from '../types/todo';
 import './Layout.css';
@@ -17,6 +17,15 @@ const categories = [
 
 const Layout: React.FC<LayoutProps> = ({ children, todos }) => {
   const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
 
   const getCategoryCount = (categoryId: string): number => {
     const today = new Date();
@@ -44,30 +53,47 @@ const Layout: React.FC<LayoutProps> = ({ children, todos }) => {
 
   return (
     <div className="layout">
-      <aside className="sidebar">
-        <h1 className="sidebar-title">Simple Todo App</h1>
-        <nav className="category-nav">
-          {categories.map((category) => {
-            const count = getCategoryCount(category.id);
-            return (
-              <Link
-                key={category.id}
-                to={`/category/${category.id}`}
-                className={`category-link ${location.pathname === `/category/${category.id}` ? 'active' : ''}`}
-              >
-                <span className="category-name">
-                  <span className="category-emoji">{category.emoji}</span>
-                  {category.name}
-                </span>
-                {count > 0 && <span className="category-count">{count}</span>}
-              </Link>
-            );
-          })}
+      <button 
+        className="hamburger-button"
+        onClick={toggleSidebar}
+        aria-label="Toggle menu"
+      >
+        <span className="hamburger-icon"></span>
+      </button>
+
+      <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <h1>Simple Todo</h1>
+          <button 
+            className="close-sidebar"
+            onClick={closeSidebar}
+            aria-label="Close menu"
+          >
+            ×
+          </button>
+        </div>
+        <nav>
+          {categories.map(category => (
+            <Link
+              key={category.id}
+              to={`/${category.name.toLowerCase()}`}
+              className={`category-link ${location.pathname === `/${category.name.toLowerCase()}` ? 'active' : ''}`}
+              onClick={closeSidebar}
+            >
+              <span className="category-emoji">{category.emoji}</span>
+              <span className="category-name">{category.name}</span>
+            </Link>
+          ))}
         </nav>
-      </aside>
-      <main className="main-content">
+      </div>
+
+      <div className={`main-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
         {children}
-      </main>
+      </div>
+
+      {isSidebarOpen && (
+        <div className="sidebar-overlay" onClick={closeSidebar} />
+      )}
     </div>
   );
 };
