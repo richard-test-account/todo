@@ -24,9 +24,9 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   const [inputValue, setInputValue] = useState<string>('');
   const [dueDate, setDueDate] = useState<string>('');
 
-  const category = categoryId?.split('-').map(word => 
+  const category = categoryId ? categoryId.split('-').map(word => 
     word.charAt(0).toUpperCase() + word.slice(1)
-  ).join(' ') as Category;
+  ).join(' ') as Category : 'To classify';
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
