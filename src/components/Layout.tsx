@@ -9,7 +9,7 @@ interface LayoutProps {
 }
 
 const categories = [
-  { id: 'to-classify', name: 'To classify', emoji: '📋' },
+  { id: 'to-classify', name: 'To Classify', emoji: '📋' },
   { id: 'today', name: 'Today', emoji: '📅' },
   { id: 'later', name: 'Later', emoji: '⏳' },
   { id: 'done', name: 'Done', emoji: '✅' },

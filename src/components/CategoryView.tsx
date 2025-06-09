@@ -15,7 +15,7 @@ interface CategoryViewProps {
 }
 
 const categoryEmojis: Record<string, string> = {
-  'To classify': '📋',
+  'To Classify': '📋',
   'Today': '📅',
   'Later': '⏳',
   'Done': '✅'
@@ -40,8 +40,8 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   const [editDescription, setEditDescription] = useState('');
 
   const categoryName = category ? category.split('-').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1)
-  ).join(' ') as Category : 'To classify';
+    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+  ).join(' ') as Category : 'To Classify';
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -85,7 +85,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     switch (categoryName) {
-      case 'To classify':
+      case 'To Classify':
         return !todo.dueDate;
       case 'Today':
         return todo.dueDate && new Date(todo.dueDate).setHours(0, 0, 0, 0) === today.getTime();
