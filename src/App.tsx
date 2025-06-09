@@ -104,7 +104,7 @@ function App() {
 
   return (
     <Router>
-      <Layout>
+      <Layout todos={todos}>
         <Routes>
           <Route path="/" element={<CategoryView todos={todos} onAddTodo={addTodo} onToggleTodo={toggleTodo} onDeleteTodo={deleteTodo} onUpdateTodo={updateTodo} onUpdateDueDate={updateDueDate} showAllTodos />} />
           <Route path="/category/:category" element={<CategoryView todos={todos} onAddTodo={addTodo} onToggleTodo={toggleTodo} onDeleteTodo={deleteTodo} onUpdateTodo={updateTodo} onUpdateDueDate={updateDueDate} />} />
