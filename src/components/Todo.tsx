@@ -1,5 +1,6 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { TodoItem } from '../types/todo';
+import CategoryList from './CategoryList';
 import './Todo.css';
 
 const Todo: React.FC = () => {
@@ -32,6 +33,12 @@ const Todo: React.FC = () => {
     setTodos(todos.filter(todo => todo.id !== id));
   };
 
+  const updateDueDate = (id: number, date: Date): void => {
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, dueDate: date } : todo
+    ));
+  };
+
   return (
     <div className="todo-container">
       <h1>Things to do</h1>
@@ -46,25 +53,12 @@ const Todo: React.FC = () => {
         />
         <button type="submit" className="add-button">Add</button>
       </form>
-      <ul className="todo-list">
-        {todos.map(todo => (
-          <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-            <input
-              type="checkbox"
-              checked={todo.completed}
-              onChange={() => toggleTodo(todo.id)}
-              className="todo-checkbox"
-            />
-            <span className="todo-text">{todo.text}</span>
-            <button
-              onClick={() => deleteTodo(todo.id)}
-              className="delete-button"
-            >
-              ×
-            </button>
-          </li>
-        ))}
-      </ul>
+      <CategoryList
+        todos={todos}
+        onToggleTodo={toggleTodo}
+        onDeleteTodo={deleteTodo}
+        onUpdateDueDate={updateDueDate}
+      />
     </div>
   );
 };
