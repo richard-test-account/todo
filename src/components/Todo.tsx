@@ -6,6 +6,7 @@ import './Todo.css';
 const Todo: React.FC = () => {
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
+  const [dueDate, setDueDate] = useState<string>('');
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,10 +18,12 @@ const Todo: React.FC = () => {
         id: Date.now(),
         text: inputValue,
         completed: false,
-        createdAt: new Date()
+        createdAt: new Date(),
+        dueDate: dueDate ? new Date(dueDate) : undefined
       }
     ]);
     setInputValue('');
+    setDueDate('');
   };
 
   const toggleTodo = (id: number): void => {
@@ -43,14 +46,23 @@ const Todo: React.FC = () => {
     <div className="todo-container">
       <h1>Things to do</h1>
       <form onSubmit={handleSubmit} className="todo-form">
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
-          placeholder="What needs to be done?"
-          className="todo-input"
-          autoFocus
-        />
+        <div className="input-group">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
+            placeholder="What needs to be done?"
+            className="todo-input"
+            autoFocus
+          />
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setDueDate(e.target.value)}
+            className="date-input"
+            min={new Date().toISOString().split('T')[0]}
+          />
+        </div>
         <button type="submit" className="add-button">Add</button>
       </form>
       <CategoryList

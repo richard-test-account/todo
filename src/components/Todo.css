@@ -20,6 +20,12 @@ h1 {
   margin-bottom: 2rem;
 }
 
+.input-group {
+  flex: 1;
+  display: flex;
+  gap: 0.5rem;
+}
+
 .todo-input {
   flex: 1;
   padding: 0.75rem 1rem;
@@ -34,6 +40,21 @@ h1 {
   border-color: #007AFF;
 }
 
+.date-input {
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #666;
+  transition: border-color 0.2s;
+  min-width: 140px;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: #007AFF;
+}
+
 .add-button {
   padding: 0.75rem 1.5rem;
   background: #007AFF;
@@ -43,6 +64,7 @@ h1 {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s;
+  white-space: nowrap;
 }
 
 .add-button:hover {

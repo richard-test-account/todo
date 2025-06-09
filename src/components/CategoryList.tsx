@@ -25,7 +25,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
     const groups: CategoryGroup[] = [
       { name: 'To classify', todos: [] },
       { name: 'Today', todos: [] },
-      { name: 'Future', todos: [] },
+      { name: 'Later', todos: [] },
     ];
 
     todos.forEach((todo) => {
