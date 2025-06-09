@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TodoItem, Category, CategoryGroup } from '../types/todo';
 import './CategoryList.css';
 
@@ -15,19 +15,16 @@ const CategoryList: React.FC<CategoryListProps> = ({
   onDeleteTodo,
   onUpdateDueDate,
 }) => {
+  const [completedTodos, setCompletedTodos] = useState<Set<number>>(new Set());
+
   useEffect(() => {
     const timers: { [key: number]: NodeJS.Timeout } = {};
 
     todos.forEach((todo) => {
-      if (todo.completed) {
-        // Clear any existing timer for this todo
-        if (timers[todo.id]) {
-          clearTimeout(timers[todo.id]);
-        }
-
-        // Set a new timer
+      if (todo.completed && !completedTodos.has(todo.id)) {
+        // Set a timer to move to Done category
         timers[todo.id] = setTimeout(() => {
-          onToggleTodo(todo.id);
+          setCompletedTodos(prev => new Set(prev).add(todo.id));
         }, 3000);
       }
     });
@@ -36,7 +33,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
     return () => {
       Object.values(timers).forEach(timer => clearTimeout(timer));
     };
-  }, [todos, onToggleTodo]);
+  }, [todos, completedTodos]);
 
   const getCategoryGroups = (): CategoryGroup[] => {
     const today = new Date();
@@ -50,7 +47,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
     ];
 
     todos.forEach((todo) => {
-      if (todo.completed) {
+      if (completedTodos.has(todo.id)) {
         groups[3].todos.push(todo);
       } else if (!todo.dueDate) {
         groups[0].todos.push(todo);
@@ -100,7 +97,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
                     className="todo-checkbox"
                   />
                   <span className="todo-text">{todo.text}</span>
-                  {!todo.completed && (
+                  {!todo.completed && !completedTodos.has(todo.id) && (
                     <input
                       type="date"
                       value={todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''}
