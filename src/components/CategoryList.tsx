@@ -66,14 +66,6 @@ const CategoryList: React.FC<CategoryListProps> = ({
     return groups;
   };
 
-  const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   const handleDateChange = (id: number, dateString: string) => {
     const date = new Date(dateString);
     onUpdateDueDate(id, date);
