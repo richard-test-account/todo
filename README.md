@@ -5,7 +5,20 @@ A modern, clean, and intuitive Todo application built with React and TypeScript,
 ## Features
 
 - ✨ Clean and modern UI inspired by Things
-- ✅ Add, complete, and delete todos
+- 📋 Smart category system:
+  - "To classify": Tasks without a due date
+  - "Today": Tasks due today
+  - "Later": Tasks due in the future
+  - "Done": Completed tasks (moves here after 3 seconds)
+- 📅 Easy date assignment:
+  - Set due dates when creating tasks
+  - Modify due dates for existing tasks
+  - Automatic categorization based on due dates
+- ✅ Task management:
+  - Add new tasks
+  - Mark tasks as complete
+  - Delete tasks
+  - Automatic movement to "Done" category
 - 🎨 Smooth animations and transitions
 - 📱 Responsive design
 - 🔒 Type-safe with TypeScript
@@ -40,9 +53,25 @@ The application will be available at [http://localhost:3000](http://localhost:30
 
 ## Usage
 
-- **Adding a Todo**: Type your task in the input field and press Enter or click the "Add" button
-- **Completing a Todo**: Click the checkbox next to a todo to mark it as complete
-- **Deleting a Todo**: Click the × button next to a todo to remove it
+### Adding Tasks
+- Type your task in the input field
+- Optionally select a due date
+- Press Enter or click the "Add" button
+
+### Managing Tasks
+- **Completing a Task**: 
+  - Click the checkbox next to a task
+  - Task will automatically move to "Done" category after 3 seconds
+- **Setting Due Date**: 
+  - Use the date picker next to each task
+  - Task will automatically move to the appropriate category
+- **Deleting a Task**: Click the × button next to a task
+
+### Categories
+- **To classify**: Tasks without a due date
+- **Today**: Tasks due today
+- **Later**: Tasks due in the future
+- **Done**: Completed tasks (appears here 3 seconds after completion)
 
 ## Technologies Used
 
@@ -58,7 +87,9 @@ todo/
 ├── src/
 │   ├── components/
 │   │   ├── Todo.tsx
-│   │   └── Todo.css
+│   │   ├── Todo.css
+│   │   ├── CategoryList.tsx
+│   │   └── CategoryList.css
 │   ├── types/
 │   │   └── todo.ts
 │   ├── App.tsx
