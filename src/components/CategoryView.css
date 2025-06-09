@@ -56,12 +56,14 @@
   resize: none;
   height: 100px;
   font-family: inherit;
+  background: #fafafa;
 }
 
 .description-input:focus {
   outline: none;
   border-color: #007AFF;
   box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+  background: white;
 }
 
 .date-input {
