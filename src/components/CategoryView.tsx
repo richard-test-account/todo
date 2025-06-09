@@ -62,27 +62,29 @@ const CategoryView: React.FC<CategoryViewProps> = ({
 
   return (
     <div className="category-view">
-      <h2 className="category-title">{showAllTodos ? 'All Tasks' : category}</h2>
-      <form onSubmit={handleSubmit} className="todo-form">
-        <div className="input-group">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
-            placeholder="What needs to be done?"
-            className="todo-input"
-            autoFocus
-          />
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setDueDate(e.target.value)}
-            className="date-input"
-            min={new Date().toISOString().split('T')[0]}
-          />
-        </div>
-        <button type="submit" className="add-button">Add</button>
-      </form>
+      <div className="category-header">
+        <h2 className="category-title">{showAllTodos ? 'All Tasks' : category}</h2>
+        <form onSubmit={handleSubmit} className="todo-form">
+          <div className="input-group">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
+              placeholder="What needs to be done?"
+              className="todo-input"
+              autoFocus
+            />
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setDueDate(e.target.value)}
+              className="date-input"
+              min={new Date().toISOString().split('T')[0]}
+            />
+            <button type="submit" className="add-button">Add</button>
+          </div>
+        </form>
+      </div>
       {filteredTodos.length === 0 ? (
         <p className="empty-message">No tasks in this category</p>
       ) : (
