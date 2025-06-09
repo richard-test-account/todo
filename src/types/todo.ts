@@ -7,7 +7,7 @@ export interface TodoItem {
   dueDate?: Date;
 }
 
-export type Category = 'To classify' | 'Today' | 'Later';
+export type Category = 'To classify' | 'Today' | 'Later' | 'Done';
 
 export interface CategoryGroup {
   name: Category;

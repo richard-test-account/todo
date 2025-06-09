@@ -21,6 +21,11 @@
   border-bottom: 2px solid #f0f0f0;
 }
 
+/* Special styling for Done category */
+.category-group:last-child .category-title {
+  color: #28a745;
+}
+
 .empty-message {
   color: #666;
   font-style: italic;
@@ -50,7 +55,7 @@
   background: #f8f9fa;
   border-radius: 8px;
   margin-bottom: 0.5rem;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .todo-item:hover {
@@ -70,9 +75,13 @@
   color: #333;
 }
 
+.todo-item.completed {
+  background: #e8f5e9;
+}
+
 .todo-item.completed .todo-text {
   text-decoration: line-through;
-  color: #6c757d;
+  color: #28a745;
 }
 
 .delete-button {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TodoItem, Category, CategoryGroup } from '../types/todo';
 import './CategoryList.css';
 
@@ -15,21 +15,44 @@ const CategoryList: React.FC<CategoryListProps> = ({
   onDeleteTodo,
   onUpdateDueDate,
 }) => {
+  useEffect(() => {
+    const timers: { [key: number]: NodeJS.Timeout } = {};
+
+    todos.forEach((todo) => {
+      if (todo.completed) {
+        // Clear any existing timer for this todo
+        if (timers[todo.id]) {
+          clearTimeout(timers[todo.id]);
+        }
+
+        // Set a new timer
+        timers[todo.id] = setTimeout(() => {
+          onToggleTodo(todo.id);
+        }, 3000);
+      }
+    });
+
+    // Cleanup timers when component unmounts or todos change
+    return () => {
+      Object.values(timers).forEach(timer => clearTimeout(timer));
+    };
+  }, [todos, onToggleTodo]);
+
   const getCategoryGroups = (): CategoryGroup[] => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
 
     const groups: CategoryGroup[] = [
       { name: 'To classify', todos: [] },
       { name: 'Today', todos: [] },
       { name: 'Later', todos: [] },
+      { name: 'Done', todos: [] },
     ];
 
     todos.forEach((todo) => {
-      if (!todo.dueDate) {
+      if (todo.completed) {
+        groups[3].todos.push(todo);
+      } else if (!todo.dueDate) {
         groups[0].todos.push(todo);
       } else {
         const dueDate = new Date(todo.dueDate);
@@ -77,12 +100,14 @@ const CategoryList: React.FC<CategoryListProps> = ({
                     className="todo-checkbox"
                   />
                   <span className="todo-text">{todo.text}</span>
-                  <input
-                    type="date"
-                    value={todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''}
-                    onChange={(e) => handleDateChange(todo.id, e.target.value)}
-                    className="todo-date"
-                  />
+                  {!todo.completed && (
+                    <input
+                      type="date"
+                      value={todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''}
+                      onChange={(e) => handleDateChange(todo.id, e.target.value)}
+                      className="todo-date"
+                    />
+                  )}
                   <button
                     onClick={() => onDeleteTodo(todo.id)}
                     className="delete-button"
