@@ -1,21 +1,18 @@
-import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { TodoItem, Category } from '../types/todo';
-import { getTodos, addTodo, updateTodo, deleteTodo } from '../utils/db';
+import { TodoItem } from '../types/todo';
 import './CategoryView.css';
 
 interface CategoryViewProps {
   todos: TodoItem[];
-  onToggleTodo: (id: number) => void;
-  onDeleteTodo: (id: number) => void;
-  onUpdateDueDate: (id: number, date: Date) => void;
   onAddTodo: (text: string, description?: string, dueDate?: Date) => void;
-  onUpdateTodo: (id: number, text: string, description?: string) => void;
-  showAllTodos?: boolean;
+  onToggleTodo: (id: string) => void;
+  onDeleteTodo: (id: string) => void;
+  onUpdateTodo: (id: string, text: string, description?: string, dueDate?: Date) => void;
+  category: string;
 }
 
-const categoryEmojis: Record<string, string> = {
+const categoryEmojis: { [key: string]: string } = {
   'To Classify': '📋',
   'Today': '📅',
   'Later': '⏳',
@@ -24,199 +21,201 @@ const categoryEmojis: Record<string, string> = {
 
 const CategoryView: React.FC<CategoryViewProps> = ({
   todos,
+  onAddTodo,
   onToggleTodo,
   onDeleteTodo,
-  onUpdateDueDate,
-  onAddTodo,
   onUpdateTodo,
-  showAllTodos = false,
+  category
 }) => {
-  const { category } = useParams<{ category: string }>();
-  const [inputValue, setInputValue] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+  const [newTodoText, setNewTodoText] = useState('');
+  const [newTodoDescription, setNewTodoDescription] = useState('');
+  const [newTodoDueDate, setNewTodoDueDate] = useState<string>('');
   const [showDescription, setShowDescription] = useState(false);
-  const [dueDate, setDueDate] = useState<string>('');
-  const [expandedTodo, setExpandedTodo] = useState<number | null>(null);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editDueDate, setEditDueDate] = useState<string>('');
+  const [expandedTodos, setExpandedTodos] = useState<Set<string>>(new Set());
 
-  const categoryName = category ? category.split('-').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-  ).join(' ') as Category : 'To Classify';
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputValue.trim() === '') return;
-    
-    onAddTodo(inputValue, description, dueDate ? new Date(dueDate) : undefined);
-    setInputValue('');
-    setDescription('');
-    setDueDate('');
+    if (!newTodoText.trim()) return;
+
+    const dueDate = newTodoDueDate ? new Date(newTodoDueDate) : undefined;
+    onAddTodo(newTodoText.trim(), newTodoDescription.trim() || undefined, dueDate);
+    setNewTodoText('');
+    setNewTodoDescription('');
+    setNewTodoDueDate('');
+    setShowDescription(false);
   };
 
-  const handleDateChange = (id: number, dateString: string) => {
-    const date = new Date(dateString);
-    onUpdateDueDate(id, date);
-  };
-
-  const handleDoubleClick = (todo: TodoItem) => {
+  const handleEdit = (todo: TodoItem) => {
     setEditingId(todo.id);
     setEditText(todo.text);
     setEditDescription(todo.description || '');
+    setEditDueDate(todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : '');
   };
 
-  const handleEditSubmit = (id: number) => {
-    onUpdateTodo(id, editText, editDescription);
+  const handleSaveEdit = (id: string) => {
+    if (!editText.trim()) return;
+
+    const dueDate = editDueDate ? new Date(editDueDate) : undefined;
+    onUpdateTodo(id, editText.trim(), editDescription.trim() || undefined, dueDate);
     setEditingId(null);
   };
 
-  const handleEditKeyDown = (e: React.KeyboardEvent, id: number) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleEditSubmit(id);
-    } else if (e.key === 'Escape') {
-      setEditingId(null);
-    }
+  const toggleExpanded = (id: string) => {
+    setExpandedTodos(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
   };
-
-  const filteredTodos = showAllTodos ? todos : todos.filter(todo => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    switch (categoryName) {
-      case 'To Classify':
-        return !todo.dueDate;
-      case 'Today':
-        return todo.dueDate && new Date(todo.dueDate).setHours(0, 0, 0, 0) === today.getTime();
-      case 'Later':
-        return todo.dueDate && new Date(todo.dueDate) >= tomorrow;
-      case 'Done':
-        return todo.completed;
-      default:
-        return false;
-    }
-  });
 
   return (
     <div className="category-view">
-      <div className="category-header">
-        <h2 className="category-title">
-          {showAllTodos ? 'All Tasks' : (
-            <>
-              <span className="category-emoji">{categoryEmojis[categoryName]}</span>
-              {categoryName}
-            </>
-          )}
-        </h2>
-        <form onSubmit={handleSubmit} className="todo-form">
-          <div className="input-group">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
-              placeholder="What needs to be done?"
-              className="todo-input"
-              autoFocus
-            />
-            <input
-              type="date"
-              value={dueDate}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setDueDate(e.target.value)}
-              className="date-input"
-              min={new Date().toISOString().split('T')[0]}
-            />
-            <button type="submit" className="add-button">Add</button>
-          </div>
-          <div className="form-actions">
-            <button 
-              type="button" 
-              className="toggle-description-button"
-              onClick={() => setShowDescription(!showDescription)}
-            >
-              {showDescription ? 'Hide Description' : 'Add Description'}
-            </button>
-          </div>
-          {showDescription && (
-            <textarea
-              value={description}
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
-              placeholder="Add a description (supports markdown)"
-              className="description-input"
-              rows={3}
-            />
-          )}
-        </form>
-      </div>
-      <div className="category-content">
-        {filteredTodos.length === 0 ? (
-          <div className="empty-state">
-            <p className="empty-message">No tasks in this category</p>
-            <p className="empty-hint">Add a new task using the form above</p>
-          </div>
-        ) : (
-          <ul className="todo-list">
-            {filteredTodos.map((todo) => (
-              <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-                {editingId === todo.id ? (
-                  <div className="todo-edit">
-                    <input
-                      type="text"
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                      onKeyDown={(e) => handleEditKeyDown(e, todo.id)}
-                      className="todo-input"
-                      autoFocus
-                    />
-                    <textarea
-                      value={editDescription}
-                      onChange={(e) => setEditDescription(e.target.value)}
-                      placeholder="Add a description (supports markdown)..."
-                      className="description-input"
-                    />
-                    <div className="todo-edit-actions">
-                      <button onClick={() => handleEditSubmit(todo.id)} className="save-button">Save</button>
-                      <button onClick={() => setEditingId(null)} className="cancel-button">Cancel</button>
+      <h1 className="category-title">
+        <span className="category-emoji">{categoryEmojis[category]}</span>
+        {category}
+      </h1>
+
+      <form className="todo-form" onSubmit={handleSubmit}>
+        <div className="form-row">
+          <input
+            type="text"
+            className="todo-input"
+            value={newTodoText}
+            onChange={(e) => setNewTodoText(e.target.value)}
+            placeholder="Add a new task..."
+          />
+          <button type="submit" className="add-button">
+            Add
+          </button>
+        </div>
+
+        <div className="form-actions">
+          <button
+            type="button"
+            className="toggle-description-button"
+            onClick={() => setShowDescription(!showDescription)}
+          >
+            {showDescription ? 'Hide description' : 'Add description'}
+          </button>
+          <input
+            type="date"
+            className="date-input"
+            value={newTodoDueDate}
+            onChange={(e) => setNewTodoDueDate(e.target.value)}
+          />
+        </div>
+
+        {showDescription && (
+          <textarea
+            className="description-input"
+            value={newTodoDescription}
+            onChange={(e) => setNewTodoDescription(e.target.value)}
+            placeholder="Add a description (supports markdown)..."
+          />
+        )}
+      </form>
+
+      <div className="todos-list">
+        {todos.map((todo) => (
+          <div key={todo.id} className="todo-item">
+            {editingId === todo.id ? (
+              <div className="todo-edit">
+                <input
+                  type="text"
+                  className="edit-input"
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                />
+                <textarea
+                  className="description-input"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  placeholder="Add a description (supports markdown)..."
+                />
+                <input
+                  type="date"
+                  className="date-input"
+                  value={editDueDate}
+                  onChange={(e) => setEditDueDate(e.target.value)}
+                />
+                <div className="edit-actions">
+                  <button
+                    className="save-button"
+                    onClick={() => handleSaveEdit(todo.id)}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="cancel-button"
+                    onClick={() => setEditingId(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="todo-main">
+                  <input
+                    type="checkbox"
+                    className="todo-checkbox"
+                    checked={todo.completed}
+                    onChange={() => onToggleTodo(todo.id)}
+                  />
+                  <div className="todo-content">
+                    <div
+                      className="todo-text"
+                      onDoubleClick={() => handleEdit(todo)}
+                    >
+                      {todo.text}
                     </div>
+                    {todo.dueDate && (
+                      <div className="todo-date">
+                        Due: {new Date(todo.dueDate).toLocaleDateString()}
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="todo-main" onDoubleClick={() => handleDoubleClick(todo)}>
-                    <input
-                      type="checkbox"
-                      checked={todo.completed}
-                      onChange={() => onToggleTodo(todo.id)}
-                      className="todo-checkbox"
-                    />
-                    <div className="todo-content">
-                      <span className="todo-text">{todo.text}</span>
-                      {todo.dueDate && (
-                        <span className="todo-date">
-                          {new Date(todo.dueDate).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
+                  <div className="todo-actions">
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteTodo(todo.id);
-                      }}
+                      className="edit-button"
+                      onClick={() => handleEdit(todo)}
+                    >
+                      ✎
+                    </button>
+                    <button
                       className="delete-button"
+                      onClick={() => onDeleteTodo(todo.id)}
                     >
                       ×
                     </button>
                   </div>
-                )}
-                {todo.description && expandedTodo === todo.id && (
-                  <div className="todo-description">
-                    <ReactMarkdown>{todo.description}</ReactMarkdown>
+                </div>
+                {todo.description && (
+                  <div
+                    className="todo-description"
+                    onClick={() => toggleExpanded(todo.id)}
+                  >
+                    {expandedTodos.has(todo.id) ? (
+                      <ReactMarkdown>{todo.description}</ReactMarkdown>
+                    ) : (
+                      <div className="description-preview">
+                        {todo.description.split('\n')[0]}
+                      </div>
+                    )}
                   </div>
                 )}
-              </li>
-            ))}
-          </ul>
-        )}
+              </>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
