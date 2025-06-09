@@ -14,6 +14,13 @@ interface CategoryViewProps {
   showAllTodos?: boolean;
 }
 
+const categoryEmojis: Record<string, string> = {
+  'To classify': '📋',
+  'Today': '📅',
+  'Later': '⏳',
+  'Done': '✅'
+};
+
 const CategoryView: React.FC<CategoryViewProps> = ({
   todos,
   onToggleTodo,
@@ -94,7 +101,14 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   return (
     <div className="category-view">
       <div className="category-header">
-        <h2 className="category-title">{showAllTodos ? 'All Tasks' : categoryName}</h2>
+        <h2 className="category-title">
+          {showAllTodos ? 'All Tasks' : (
+            <>
+              <span className="category-emoji">{categoryEmojis[categoryName]}</span>
+              {categoryName}
+            </>
+          )}
+        </h2>
         <form onSubmit={handleSubmit} className="todo-form">
           <div className="input-group">
             <input

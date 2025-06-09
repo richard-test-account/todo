@@ -9,10 +9,10 @@ interface LayoutProps {
 }
 
 const categories = [
-  { id: 'to-classify', name: 'To classify' },
-  { id: 'today', name: 'Today' },
-  { id: 'later', name: 'Later' },
-  { id: 'done', name: 'Done' },
+  { id: 'to-classify', name: 'To classify', emoji: '📋' },
+  { id: 'today', name: 'Today', emoji: '📅' },
+  { id: 'later', name: 'Later', emoji: '⏳' },
+  { id: 'done', name: 'Done', emoji: '✅' },
 ];
 
 const Layout: React.FC<LayoutProps> = ({ children, todos }) => {
@@ -55,7 +55,10 @@ const Layout: React.FC<LayoutProps> = ({ children, todos }) => {
                 to={`/category/${category.id}`}
                 className={`category-link ${location.pathname === `/category/${category.id}` ? 'active' : ''}`}
               >
-                <span className="category-name">{category.name}</span>
+                <span className="category-name">
+                  <span className="category-emoji">{category.emoji}</span>
+                  {category.name}
+                </span>
                 {count > 0 && <span className="category-count">{count}</span>}
               </Link>
             );

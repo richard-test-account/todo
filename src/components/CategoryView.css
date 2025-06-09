@@ -8,10 +8,17 @@
 }
 
 .category-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
   color: #333;
-  font-size: 1.75rem;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
+}
+
+.category-emoji {
+  font-size: 1.2em;
+  line-height: 1;
 }
 
 .todo-form {

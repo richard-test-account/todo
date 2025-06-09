@@ -51,6 +51,14 @@
 
 .category-name {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-emoji {
+  font-size: 1.2em;
+  line-height: 1;
 }
 
 .category-count {
