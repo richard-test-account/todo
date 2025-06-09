@@ -1,13 +1,14 @@
+export type Category = 'To classify' | 'Today' | 'Later' | 'Done';
+
 export interface TodoItem {
   id: number;
   text: string;
+  description?: string;
   completed: boolean;
+  dueDate?: Date;
   createdAt: Date;
   updatedAt?: Date;
-  dueDate?: Date;
 }
-
-export type Category = 'To classify' | 'Today' | 'Later' | 'Done';
 
 export interface CategoryGroup {
   name: Category;

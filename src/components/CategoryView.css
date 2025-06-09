@@ -26,6 +26,7 @@
   display: flex;
   gap: 0.75rem;
   align-items: center;
+  margin-bottom: 0.75rem;
 }
 
 .todo-input {
@@ -39,6 +40,25 @@
 }
 
 .todo-input:focus {
+  outline: none;
+  border-color: #007AFF;
+  background: white;
+}
+
+.description-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  background: #fafafa;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.description-input:focus {
   outline: none;
   border-color: #007AFF;
   background: white;
@@ -108,9 +128,6 @@
 }
 
 .todo-item {
-  display: flex;
-  align-items: center;
-  padding: 0.875rem 1rem;
   border-bottom: 1px solid #f0f0f0;
   transition: all 0.2s ease;
 }
@@ -121,6 +138,19 @@
 
 .todo-item:hover {
   background: #fafafa;
+}
+
+.todo-main {
+  display: flex;
+  align-items: center;
+  padding: 0.875rem 1rem;
+}
+
+.todo-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .todo-checkbox {
@@ -153,7 +183,6 @@
 }
 
 .todo-text {
-  flex: 1;
   font-size: 0.95rem;
   color: #333;
   line-height: 1.4;
@@ -162,6 +191,64 @@
 .todo-item.completed .todo-text {
   color: #999;
   text-decoration: line-through;
+}
+
+.expand-button {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.expand-button:hover {
+  color: #666;
+}
+
+.todo-description {
+  padding: 0.75rem 1rem 1rem 3.25rem;
+  border-top: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.todo-description p {
+  margin: 0 0 0.75rem 0;
+}
+
+.todo-description p:last-child {
+  margin-bottom: 0;
+}
+
+.todo-description ul,
+.todo-description ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.todo-description code {
+  background: #f5f5f7;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.todo-description pre {
+  background: #f5f5f7;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+
+.todo-description pre code {
+  background: none;
+  padding: 0;
 }
 
 .todo-date {

@@ -15,10 +15,11 @@ const App: React.FC = () => {
     localStorage.setItem('todos', JSON.stringify(todos));
   }, [todos]);
 
-  const addTodo = (text: string, dueDate?: Date) => {
+  const addTodo = (text: string, description?: string, dueDate?: Date) => {
     const newTodo: TodoItem = {
       id: Date.now(),
       text,
+      description,
       completed: false,
       dueDate,
       createdAt: new Date(),

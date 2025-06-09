@@ -1,5 +1,6 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { useParams } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { TodoItem, Category } from '../types/todo';
 import './CategoryView.css';
 
@@ -8,7 +9,7 @@ interface CategoryViewProps {
   onToggleTodo: (id: number) => void;
   onDeleteTodo: (id: number) => void;
   onUpdateDueDate: (id: number, date: Date) => void;
-  onAddTodo: (text: string, dueDate?: Date) => void;
+  onAddTodo: (text: string, description?: string, dueDate?: Date) => void;
   showAllTodos?: boolean;
 }
 
@@ -22,7 +23,9 @@ const CategoryView: React.FC<CategoryViewProps> = ({
 }) => {
   const { categoryId } = useParams<{ categoryId: string }>();
   const [inputValue, setInputValue] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
   const [dueDate, setDueDate] = useState<string>('');
+  const [expandedTodo, setExpandedTodo] = useState<number | null>(null);
 
   const category = categoryId ? categoryId.split('-').map(word => 
     word.charAt(0).toUpperCase() + word.slice(1)
@@ -32,8 +35,9 @@ const CategoryView: React.FC<CategoryViewProps> = ({
     e.preventDefault();
     if (inputValue.trim() === '') return;
     
-    onAddTodo(inputValue, dueDate ? new Date(dueDate) : undefined);
+    onAddTodo(inputValue, description, dueDate ? new Date(dueDate) : undefined);
     setInputValue('');
+    setDescription('');
     setDueDate('');
   };
 
@@ -83,6 +87,13 @@ const CategoryView: React.FC<CategoryViewProps> = ({
             />
             <button type="submit" className="add-button">Add</button>
           </div>
+          <textarea
+            value={description}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+            placeholder="Add a description (supports markdown)"
+            className="description-input"
+            rows={3}
+          />
         </form>
       </div>
       <div className="category-content">
@@ -95,27 +106,44 @@ const CategoryView: React.FC<CategoryViewProps> = ({
           <ul className="todo-list">
             {filteredTodos.map((todo) => (
               <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-                <input
-                  type="checkbox"
-                  checked={todo.completed}
-                  onChange={() => onToggleTodo(todo.id)}
-                  className="todo-checkbox"
-                />
-                <span className="todo-text">{todo.text}</span>
-                {!todo.completed && (
+                <div className="todo-main">
                   <input
-                    type="date"
-                    value={todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''}
-                    onChange={(e) => handleDateChange(todo.id, e.target.value)}
-                    className="todo-date"
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() => onToggleTodo(todo.id)}
+                    className="todo-checkbox"
                   />
+                  <div className="todo-content">
+                    <span className="todo-text">{todo.text}</span>
+                    {todo.description && (
+                      <button
+                        className="expand-button"
+                        onClick={() => setExpandedTodo(expandedTodo === todo.id ? null : todo.id)}
+                      >
+                        {expandedTodo === todo.id ? '▼' : '▶'}
+                      </button>
+                    )}
+                  </div>
+                  {!todo.completed && (
+                    <input
+                      type="date"
+                      value={todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''}
+                      onChange={(e) => handleDateChange(todo.id, e.target.value)}
+                      className="todo-date"
+                    />
+                  )}
+                  <button
+                    onClick={() => onDeleteTodo(todo.id)}
+                    className="delete-button"
+                  >
+                    ×
+                  </button>
+                </div>
+                {todo.description && expandedTodo === todo.id && (
+                  <div className="todo-description">
+                    <ReactMarkdown>{todo.description}</ReactMarkdown>
+                  </div>
                 )}
-                <button
-                  onClick={() => onDeleteTodo(todo.id)}
-                  className="delete-button"
-                >
-                  ×
-                </button>
               </li>
             ))}
           </ul>
