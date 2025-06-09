@@ -9,6 +9,7 @@ interface CategoryViewProps {
   onDeleteTodo: (id: number) => void;
   onUpdateDueDate: (id: number, date: Date) => void;
   onAddTodo: (text: string, dueDate?: Date) => void;
+  showAllTodos?: boolean;
 }
 
 const CategoryView: React.FC<CategoryViewProps> = ({
@@ -17,6 +18,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   onDeleteTodo,
   onUpdateDueDate,
   onAddTodo,
+  showAllTodos = false,
 }) => {
   const { categoryId } = useParams<{ categoryId: string }>();
   const [inputValue, setInputValue] = useState<string>('');
@@ -40,7 +42,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
     onUpdateDueDate(id, date);
   };
 
-  const filteredTodos = todos.filter(todo => {
+  const filteredTodos = showAllTodos ? todos : todos.filter(todo => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -60,7 +62,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
 
   return (
     <div className="category-view">
-      <h2 className="category-title">{category}</h2>
+      <h2 className="category-title">{showAllTodos ? 'All Tasks' : category}</h2>
       <form onSubmit={handleSubmit} className="todo-form">
         <div className="input-group">
           <input

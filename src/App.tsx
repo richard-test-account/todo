@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import CategoryView from './components/CategoryView';
 import { TodoItem } from './types/todo';
@@ -50,7 +50,19 @@ const App: React.FC = () => {
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<Navigate to="/to-classify" replace />} />
+          <Route
+            path="/"
+            element={
+              <CategoryView
+                todos={todos}
+                onToggleTodo={toggleTodo}
+                onDeleteTodo={deleteTodo}
+                onUpdateDueDate={updateDueDate}
+                onAddTodo={addTodo}
+                showAllTodos
+              />
+            }
+          />
           <Route
             path="/:categoryId"
             element={
