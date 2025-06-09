@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { TodoItem } from './types/todo';
 import CategoryView from './components/CategoryView';
+import Layout from './components/Layout';
 import { todoDB } from './services/db';
 import './App.css';
 
@@ -103,12 +104,12 @@ function App() {
 
   return (
     <Router>
-      <div className="app">
+      <Layout>
         <Routes>
-          <Route path="/" element={<CategoryView todos={todos} onAddTodo={addTodo} onToggleTodo={toggleTodo} onDeleteTodo={deleteTodo} onUpdateTodo={updateTodo} onUpdateDueDate={updateDueDate} />} />
+          <Route path="/" element={<CategoryView todos={todos} onAddTodo={addTodo} onToggleTodo={toggleTodo} onDeleteTodo={deleteTodo} onUpdateTodo={updateTodo} onUpdateDueDate={updateDueDate} showAllTodos />} />
           <Route path="/category/:category" element={<CategoryView todos={todos} onAddTodo={addTodo} onToggleTodo={toggleTodo} onDeleteTodo={deleteTodo} onUpdateTodo={updateTodo} onUpdateDueDate={updateDueDate} />} />
         </Routes>
-      </div>
+      </Layout>
     </Router>
   );
 }
