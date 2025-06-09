@@ -21,6 +21,8 @@ const Layout: React.FC<LayoutProps> = ({ children, todos }) => {
   const getCategoryCount = (categoryId: string): number => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
     switch (categoryId) {
       case 'to-classify':
@@ -31,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children, todos }) => {
         ).length;
       case 'later':
         return todos.filter(todo => 
-          todo.dueDate && new Date(todo.dueDate) > today
+          todo.dueDate && new Date(todo.dueDate) >= tomorrow
         ).length;
       case 'done':
         return todos.filter(todo => todo.completed).length;

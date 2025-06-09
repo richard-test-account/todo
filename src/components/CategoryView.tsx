@@ -74,6 +74,8 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   const filteredTodos = showAllTodos ? todos : todos.filter(todo => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
     switch (categoryName) {
       case 'To classify':
@@ -81,7 +83,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
       case 'Today':
         return todo.dueDate && new Date(todo.dueDate).setHours(0, 0, 0, 0) === today.getTime();
       case 'Later':
-        return todo.dueDate && new Date(todo.dueDate) > today;
+        return todo.dueDate && new Date(todo.dueDate) >= tomorrow;
       case 'Done':
         return todo.completed;
       default:
