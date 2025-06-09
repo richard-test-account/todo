@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react';
+import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { TodoItem, Category } from '../types/todo';
@@ -10,6 +10,7 @@ interface CategoryViewProps {
   onDeleteTodo: (id: number) => void;
   onUpdateDueDate: (id: number, date: Date) => void;
   onAddTodo: (text: string, description?: string, dueDate?: Date) => void;
+  onUpdateTodo: (id: number, text: string, description?: string) => void;
   showAllTodos?: boolean;
 }
 
@@ -19,6 +20,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   onDeleteTodo,
   onUpdateDueDate,
   onAddTodo,
+  onUpdateTodo,
   showAllTodos = false,
 }) => {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -26,6 +28,9 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   const [description, setDescription] = useState<string>('');
   const [dueDate, setDueDate] = useState<string>('');
   const [expandedTodo, setExpandedTodo] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editText, setEditText] = useState('');
+  const [editDescription, setEditDescription] = useState('');
 
   const category = categoryId ? categoryId.split('-').map(word => 
     word.charAt(0).toUpperCase() + word.slice(1)
@@ -44,6 +49,26 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   const handleDateChange = (id: number, dateString: string) => {
     const date = new Date(dateString);
     onUpdateDueDate(id, date);
+  };
+
+  const handleDoubleClick = (todo: TodoItem) => {
+    setEditingId(todo.id);
+    setEditText(todo.text);
+    setEditDescription(todo.description || '');
+  };
+
+  const handleEditSubmit = (id: number) => {
+    onUpdateTodo(id, editText, editDescription);
+    setEditingId(null);
+  };
+
+  const handleEditKeyDown = (e: React.KeyboardEvent, id: number) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleEditSubmit(id);
+    } else if (e.key === 'Escape') {
+      setEditingId(null);
+    }
   };
 
   const filteredTodos = showAllTodos ? todos : todos.filter(todo => {
@@ -106,39 +131,68 @@ const CategoryView: React.FC<CategoryViewProps> = ({
           <ul className="todo-list">
             {filteredTodos.map((todo) => (
               <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-                <div className="todo-main">
-                  <input
-                    type="checkbox"
-                    checked={todo.completed}
-                    onChange={() => onToggleTodo(todo.id)}
-                    className="todo-checkbox"
-                  />
-                  <div className="todo-content">
-                    <span className="todo-text">{todo.text}</span>
-                    {todo.description && (
-                      <button
-                        className="expand-button"
-                        onClick={() => setExpandedTodo(expandedTodo === todo.id ? null : todo.id)}
-                      >
-                        {expandedTodo === todo.id ? '▼' : '▶'}
-                      </button>
-                    )}
-                  </div>
-                  {!todo.completed && (
+                {editingId === todo.id ? (
+                  <div className="todo-edit">
                     <input
-                      type="date"
-                      value={todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''}
-                      onChange={(e) => handleDateChange(todo.id, e.target.value)}
-                      className="todo-date"
+                      type="text"
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      onKeyDown={(e) => handleEditKeyDown(e, todo.id)}
+                      className="todo-input"
+                      autoFocus
                     />
-                  )}
-                  <button
-                    onClick={() => onDeleteTodo(todo.id)}
-                    className="delete-button"
-                  >
-                    ×
-                  </button>
-                </div>
+                    <textarea
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      placeholder="Add a description (supports markdown)..."
+                      className="description-input"
+                    />
+                    <div className="todo-edit-actions">
+                      <button onClick={() => handleEditSubmit(todo.id)} className="save-button">Save</button>
+                      <button onClick={() => setEditingId(null)} className="cancel-button">Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="todo-main" onDoubleClick={() => handleDoubleClick(todo)}>
+                    <input
+                      type="checkbox"
+                      checked={todo.completed}
+                      onChange={() => onToggleTodo(todo.id)}
+                      className="todo-checkbox"
+                    />
+                    <div className="todo-content">
+                      <span className="todo-text">{todo.text}</span>
+                      {todo.description && (
+                        <button
+                          className="expand-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedTodo(expandedTodo === todo.id ? null : todo.id);
+                          }}
+                        >
+                          {expandedTodo === todo.id ? '▼' : '▶'}
+                        </button>
+                      )}
+                    </div>
+                    {!todo.completed && (
+                      <input
+                        type="date"
+                        value={todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''}
+                        onChange={(e) => handleDateChange(todo.id, e.target.value)}
+                        className="todo-date"
+                      />
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteTodo(todo.id);
+                      }}
+                      className="delete-button"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
                 {todo.description && expandedTodo === todo.id && (
                   <div className="todo-description">
                     <ReactMarkdown>{todo.description}</ReactMarkdown>

@@ -21,30 +21,32 @@ const App: React.FC = () => {
       text,
       description,
       completed: false,
-      dueDate,
-      createdAt: new Date(),
+      dueDate: dueDate || undefined,
+      createdAt: new Date()
     };
     setTodos([...todos, newTodo]);
   };
 
+  const updateTodo = (id: number, text: string, description?: string) => {
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, text, description } : todo
+    ));
+  };
+
   const toggleTodo = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
   };
 
   const deleteTodo = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+    setTodos(todos.filter(todo => todo.id !== id));
   };
 
   const updateDueDate = (id: number, date: Date) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, dueDate: date } : todo
-      )
-    );
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, dueDate: date } : todo
+    ));
   };
 
   return (
@@ -60,6 +62,7 @@ const App: React.FC = () => {
                 onDeleteTodo={deleteTodo}
                 onUpdateDueDate={updateDueDate}
                 onAddTodo={addTodo}
+                onUpdateTodo={updateTodo}
                 showAllTodos
               />
             }
@@ -73,6 +76,7 @@ const App: React.FC = () => {
                 onDeleteTodo={deleteTodo}
                 onUpdateDueDate={updateDueDate}
                 onAddTodo={addTodo}
+                onUpdateTodo={updateTodo}
               />
             }
           />
