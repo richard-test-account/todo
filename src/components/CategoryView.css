@@ -67,6 +67,29 @@
   background: #0056b3;
 }
 
+.category-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-message {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-hint {
+  color: #999;
+  font-size: 0.9rem;
+}
+
 .todo-list {
   list-style: none;
   padding: 0;
@@ -128,11 +151,4 @@
 
 .delete-button:hover {
   opacity: 1;
-}
-
-.empty-message {
-  text-align: center;
-  color: #666;
-  font-size: 1.1rem;
-  margin-top: 2rem;
 } 

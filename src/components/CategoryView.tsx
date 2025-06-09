@@ -85,37 +85,42 @@ const CategoryView: React.FC<CategoryViewProps> = ({
           </div>
         </form>
       </div>
-      {filteredTodos.length === 0 ? (
-        <p className="empty-message">No tasks in this category</p>
-      ) : (
-        <ul className="todo-list">
-          {filteredTodos.map((todo) => (
-            <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-              <input
-                type="checkbox"
-                checked={todo.completed}
-                onChange={() => onToggleTodo(todo.id)}
-                className="todo-checkbox"
-              />
-              <span className="todo-text">{todo.text}</span>
-              {!todo.completed && (
+      <div className="category-content">
+        {filteredTodos.length === 0 ? (
+          <div className="empty-state">
+            <p className="empty-message">No tasks in this category</p>
+            <p className="empty-hint">Add a new task using the form above</p>
+          </div>
+        ) : (
+          <ul className="todo-list">
+            {filteredTodos.map((todo) => (
+              <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
                 <input
-                  type="date"
-                  value={todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''}
-                  onChange={(e) => handleDateChange(todo.id, e.target.value)}
-                  className="todo-date"
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => onToggleTodo(todo.id)}
+                  className="todo-checkbox"
                 />
-              )}
-              <button
-                onClick={() => onDeleteTodo(todo.id)}
-                className="delete-button"
-              >
-                ×
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+                <span className="todo-text">{todo.text}</span>
+                {!todo.completed && (
+                  <input
+                    type="date"
+                    value={todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''}
+                    onChange={(e) => handleDateChange(todo.id, e.target.value)}
+                    className="todo-date"
+                  />
+                )}
+                <button
+                  onClick={() => onDeleteTodo(todo.id)}
+                  className="delete-button"
+                >
+                  ×
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };
