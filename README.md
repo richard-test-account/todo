@@ -1,6 +1,6 @@
-# Todo App
+# Simple Todo App
 
-![Todo App Screenshot](screenshot.png)
+![Simple Todo App Screenshot](screenshot.png)
 
 A modern, Things 3-inspired todo application built with React, TypeScript, and IndexedDB.
 
