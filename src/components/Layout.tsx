@@ -45,7 +45,7 @@ const Layout: React.FC<LayoutProps> = ({ children, todos }) => {
   return (
     <div className="layout">
       <aside className="sidebar">
-        <h1 className="sidebar-title">Todo App</h1>
+        <h1 className="sidebar-title">Simple Todo App</h1>
         <nav className="category-nav">
           {categories.map((category) => {
             const count = getCategoryCount(category.id);
